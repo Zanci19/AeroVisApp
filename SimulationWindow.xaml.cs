@@ -123,17 +123,26 @@ namespace AeroVis
                                $"Lap record: {_confirmedCircuit.LapRecord} by {_confirmedCircuit.RecordHolder}\n" +
                                $"Engine: {_car.Engine}  ·  Power: {_car.Power}";
 
+            // Populate the confirmed circuit panel
+            ConfirmedCircuitHeaderLabel.Text = _confirmedCircuit.Name;
+            ConfirmedCircuitName.Text    = _confirmedCircuit.Name;
+            ConfirmedCircuitCountry.Text = _confirmedCircuit.Country;
+            ConfirmedCircuitLength.Text  = $"{_confirmedCircuit.LengthKm:F3} km  ·  {_confirmedCircuit.Corners} corners";
+            ConfirmedCircuitRecord.Text  = $"Lap record: {_confirmedCircuit.LapRecord} — {_confirmedCircuit.RecordHolder}";
+            try
+            {
+                var uri = new System.Uri(_confirmedCircuit.ImagePath, System.UriKind.RelativeOrAbsolute);
+                ConfirmedCircuitImage.Source = new BitmapImage(uri);
+            }
+            catch { ConfirmedCircuitImage.Source = null; }
+
             // ► WIND TUNNEL COMMAND:
             // Here you can send target speed to your wind tunnel hardware.
             // Example: SerialPort.WriteLine($"SPEED:{targetKmh}");
-            MessageBox.Show(
-                $"Circuit confirmed: {_confirmedCircuit.Name}\n" +
-                $"Car: {_car.Name}\n\n" +
-                $"Wind tunnel will simulate aerodynamics for this circuit.\n" +
-                $"Animation feature coming soon.",
-                "AeroVis — Circuit Confirmed",
-                MessageBoxButton.OK,
-                MessageBoxImage.None);
+
+            // Switch to simulation mode: hide the circuit selector, show confirmed view
+            CircuitSelectorPanel.Visibility  = Visibility.Collapsed;
+            CircuitConfirmedPanel.Visibility = Visibility.Visible;
         }
 
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) => DragMove();
