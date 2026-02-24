@@ -38,6 +38,14 @@ namespace AeroVis
             simWin.Show();
         }
 
+        private void SelectTrack_Click(object sender, RoutedEventArgs e)
+        {
+            var car = _vm.SelectedCar;
+            if (car == null) return;
+            var simWin = new SimulationWindow(car, _vm);
+            simWin.Show();
+        }
+
         // ► TO CONNECT DIAL: Replace body with SerialPort open/close.
         // In your read loop: App.Current.Dispatcher.Invoke(() => _vm.WindSpeed = value);
         private void ToggleConnect_Click(object sender, RoutedEventArgs e)

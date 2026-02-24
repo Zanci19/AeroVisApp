@@ -3,9 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:conv="clr-namespace:AeroVis.Converters"
         Title="AeroVis — Simulation"
-        Width="1280" Height="760"
         MinWidth="1100" MinHeight="680"
         WindowStartupLocation="CenterScreen"
+        WindowState="Maximized"
         Background="#0A0A0A"
         FontFamily="Segoe UI"
         WindowStyle="None"
@@ -172,142 +172,187 @@
           </Grid>
         </Border>
 
-        <!-- ══ TOP-RIGHT: Circuit chooser slideshow ══ -->
+        <!-- ══ TOP-RIGHT: Circuit chooser / confirmed circuit ══ -->
         <Border Grid.Row="0" Grid.Column="2" Background="#0D0D0D">
           <Grid>
-            <Grid.RowDefinitions>
-              <RowDefinition Height="30"/>
-              <RowDefinition Height="*"/>
-              <RowDefinition Height="Auto"/>
-              <RowDefinition Height="44"/>
-            </Grid.RowDefinitions>
 
-            <!-- Header -->
-            <Border Grid.Row="0" Background="#0A0A0A"
-                    BorderBrush="#1A1A1A" BorderThickness="0,0,0,1" Padding="12,0">
-              <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                <TextBlock Text="CIRCUITS" Foreground="#FF6B00" FontSize="9" FontWeight="Bold"
-                           VerticalAlignment="Center" Margin="0,0,8,0"/>
-                <TextBlock x:Name="CircuitCompatLabel" Text="compatible with selected car"
-                           Foreground="#333" FontSize="9" VerticalAlignment="Center"/>
-              </StackPanel>
-            </Border>
+            <!-- ── Selector panel (visible until circuit confirmed) ── -->
+            <Grid x:Name="CircuitSelectorPanel">
+              <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="44"/>
+              </Grid.RowDefinitions>
 
-            <!-- Circuit image -->
-            <Border Grid.Row="1" Background="#0A0A0A" Margin="10,8,10,6">
-              <Grid>
-                <Image x:Name="CircuitImage" Stretch="Uniform" Margin="20"
-                       RenderOptions.BitmapScalingMode="HighQuality"/>
-                <!-- Selected highlight overlay -->
-                <Border x:Name="CircuitSelectedBorder" CornerRadius="6"
-                        BorderThickness="2" BorderBrush="#FF6B00" Visibility="Collapsed"/>
-              </Grid>
-            </Border>
+              <!-- Header -->
+              <Border Grid.Row="0" Background="#0A0A0A"
+                      BorderBrush="#1A1A1A" BorderThickness="0,0,0,1" Padding="12,0">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                  <TextBlock Text="CIRCUITS" Foreground="#FF6B00" FontSize="9" FontWeight="Bold"
+                             VerticalAlignment="Center" Margin="0,0,8,0"/>
+                  <TextBlock x:Name="CircuitCompatLabel" Text="compatible with selected car"
+                             Foreground="#333" FontSize="9" VerticalAlignment="Center"/>
+                </StackPanel>
+              </Border>
 
-            <!-- Circuit name + info -->
-            <Border Grid.Row="2" Background="#111" Margin="10,0,10,6"
-                    CornerRadius="6" Padding="10,8">
-              <Grid>
-                <StackPanel>
-                  <TextBlock x:Name="CircuitNameText" Text="—"
-                             Foreground="White" FontSize="13" FontWeight="Bold"/>
-                  <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
-                    <TextBlock x:Name="CircuitCountryText" Text=""
-                               Foreground="#555" FontSize="10"/>
-                    <TextBlock Text="  ·  " Foreground="#333"/>
-                    <TextBlock x:Name="CircuitLengthText" Text=""
-                               Foreground="#555" FontSize="10"/>
-                    <TextBlock Text="  ·  " Foreground="#333"/>
-                    <TextBlock x:Name="CircuitRecordText" Text=""
-                               Foreground="#555" FontSize="10"/>
+              <!-- Circuit image -->
+              <Border Grid.Row="1" Background="#0A0A0A" Margin="10,8,10,6">
+                <Grid>
+                  <Image x:Name="CircuitImage" Stretch="Uniform" Margin="20"
+                         RenderOptions.BitmapScalingMode="HighQuality"/>
+                  <Border x:Name="CircuitSelectedBorder" CornerRadius="6"
+                          BorderThickness="2" BorderBrush="#FF6B00" Visibility="Collapsed"/>
+                </Grid>
+              </Border>
+
+              <!-- Circuit name + info -->
+              <Border Grid.Row="2" Background="#111" Margin="10,0,10,6"
+                      CornerRadius="6" Padding="10,8">
+                <Grid>
+                  <StackPanel>
+                    <TextBlock x:Name="CircuitNameText" Text="—"
+                               Foreground="White" FontSize="13" FontWeight="Bold"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                      <TextBlock x:Name="CircuitCountryText" Text=""
+                                 Foreground="#555" FontSize="10"/>
+                      <TextBlock Text="  ·  " Foreground="#333"/>
+                      <TextBlock x:Name="CircuitLengthText" Text=""
+                                 Foreground="#555" FontSize="10"/>
+                      <TextBlock Text="  ·  " Foreground="#333"/>
+                      <TextBlock x:Name="CircuitRecordText" Text=""
+                                 Foreground="#555" FontSize="10"/>
+                    </StackPanel>
                   </StackPanel>
-                </StackPanel>
-                <TextBlock x:Name="CircuitIndexText" Text="1 / 1"
-                           Foreground="#2A2A2A" FontSize="10"
-                           HorizontalAlignment="Right" VerticalAlignment="Center"/>
-              </Grid>
-            </Border>
+                  <TextBlock x:Name="CircuitIndexText" Text="1 / 1"
+                             Foreground="#2A2A2A" FontSize="10"
+                             HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                </Grid>
+              </Border>
 
-            <!-- Circuit nav + confirm -->
-            <Border Grid.Row="3" Background="#0A0A0A"
-                    BorderBrush="#1A1A1A" BorderThickness="0,1,0,0">
-              <Grid Margin="10,0">
-                <!-- Nav arrows + dots -->
-                <StackPanel Orientation="Horizontal"
-                            HorizontalAlignment="Left" VerticalAlignment="Center">
-                  <Button Width="32" Height="32" FontSize="16" Content="‹"
-                          Background="#1A1A1A" Foreground="#FF6B00"
-                          BorderBrush="#2A2A2A" BorderThickness="1" Cursor="Hand"
-                          Click="PrevCircuit_Click">
+              <!-- Circuit nav + confirm -->
+              <Border Grid.Row="3" Background="#0A0A0A"
+                      BorderBrush="#1A1A1A" BorderThickness="0,1,0,0">
+                <Grid Margin="10,0">
+                  <StackPanel Orientation="Horizontal"
+                              HorizontalAlignment="Left" VerticalAlignment="Center">
+                    <Button Width="32" Height="32" FontSize="16" Content="‹"
+                            Background="#1A1A1A" Foreground="#FF6B00"
+                            BorderBrush="#2A2A2A" BorderThickness="1" Cursor="Hand"
+                            Click="PrevCircuit_Click">
+                      <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                          <Border x:Name="bd" Background="{TemplateBinding Background}"
+                                  BorderBrush="{TemplateBinding BorderBrush}"
+                                  BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="5">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                          </Border>
+                          <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                              <Setter TargetName="bd" Property="Background" Value="#FF6B00"/>
+                              <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                          </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                      </Button.Template>
+                    </Button>
+                    <ItemsControl x:Name="CircuitDots" Margin="8,0" VerticalAlignment="Center">
+                      <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate><StackPanel Orientation="Horizontal"/></ItemsPanelTemplate>
+                      </ItemsControl.ItemsPanel>
+                      <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                          <Ellipse Width="5" Height="5" Margin="3,0" Fill="#252525"/>
+                        </DataTemplate>
+                      </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <Button Width="32" Height="32" FontSize="16" Content="›"
+                            Background="#1A1A1A" Foreground="#FF6B00"
+                            BorderBrush="#2A2A2A" BorderThickness="1" Cursor="Hand"
+                            Click="NextCircuit_Click">
+                      <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                          <Border x:Name="bd" Background="{TemplateBinding Background}"
+                                  BorderBrush="{TemplateBinding BorderBrush}"
+                                  BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="5">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                          </Border>
+                          <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                              <Setter TargetName="bd" Property="Background" Value="#FF6B00"/>
+                              <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                          </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                      </Button.Template>
+                    </Button>
+                  </StackPanel>
+
+                  <!-- CONFIRM CIRCUIT button -->
+                  <Button HorizontalAlignment="Right" Height="30" Padding="16,0"
+                          Background="#FF6B00" Cursor="Hand" Click="ConfirmCircuit_Click">
                     <Button.Template>
                       <ControlTemplate TargetType="Button">
                         <Border x:Name="bd" Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="5">
-                          <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                CornerRadius="5" Padding="{TemplateBinding Padding}">
+                          <TextBlock Text="CONFIRM CIRCUIT" Foreground="White"
+                                     FontSize="10" FontWeight="Bold"
+                                     HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
                           <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="bd" Property="Background" Value="#FF6B00"/>
-                            <Setter Property="Foreground" Value="White"/>
+                            <Setter TargetName="bd" Property="Opacity" Value="0.82"/>
                           </Trigger>
                         </ControlTemplate.Triggers>
                       </ControlTemplate>
                     </Button.Template>
                   </Button>
-                  <ItemsControl x:Name="CircuitDots" Margin="8,0" VerticalAlignment="Center">
-                    <ItemsControl.ItemsPanel>
-                      <ItemsPanelTemplate><StackPanel Orientation="Horizontal"/></ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                      <DataTemplate>
-                        <Ellipse Width="5" Height="5" Margin="3,0" Fill="#252525"/>
-                      </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                  </ItemsControl>
-                  <Button Width="32" Height="32" FontSize="16" Content="›"
-                          Background="#1A1A1A" Foreground="#FF6B00"
-                          BorderBrush="#2A2A2A" BorderThickness="1" Cursor="Hand"
-                          Click="NextCircuit_Click">
-                    <Button.Template>
-                      <ControlTemplate TargetType="Button">
-                        <Border x:Name="bd" Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="5">
-                          <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                          <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="bd" Property="Background" Value="#FF6B00"/>
-                            <Setter Property="Foreground" Value="White"/>
-                          </Trigger>
-                        </ControlTemplate.Triggers>
-                      </ControlTemplate>
-                    </Button.Template>
-                  </Button>
-                </StackPanel>
+                </Grid>
+              </Border>
+            </Grid>
 
-                <!-- CONFIRM CIRCUIT button -->
-                <Button HorizontalAlignment="Right" Height="30" Padding="16,0"
-                        Background="#FF6B00" Cursor="Hand" Click="ConfirmCircuit_Click">
-                  <Button.Template>
-                    <ControlTemplate TargetType="Button">
-                      <Border x:Name="bd" Background="{TemplateBinding Background}"
-                              CornerRadius="5" Padding="{TemplateBinding Padding}">
-                        <TextBlock Text="CONFIRM CIRCUIT" Foreground="White"
-                                   FontSize="10" FontWeight="Bold"
-                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                      </Border>
-                      <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                          <Setter TargetName="bd" Property="Opacity" Value="0.82"/>
-                        </Trigger>
-                      </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                  </Button.Template>
-                </Button>
-              </Grid>
-            </Border>
+            <!-- ── Confirmed panel (shown after circuit is confirmed) ── -->
+            <Grid x:Name="CircuitConfirmedPanel" Visibility="Collapsed">
+              <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+              </Grid.RowDefinitions>
+
+              <!-- Header -->
+              <Border Grid.Row="0" Background="#0A0A0A"
+                      BorderBrush="#1A1A1A" BorderThickness="0,0,0,1" Padding="12,0">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                  <Ellipse Width="6" Height="6" Fill="#FF6B00" Margin="0,0,6,0"/>
+                  <TextBlock Text="CIRCUIT" Foreground="#FF6B00" FontSize="9" FontWeight="Bold"
+                             VerticalAlignment="Center" Margin="0,0,8,0"/>
+                  <TextBlock x:Name="ConfirmedCircuitHeaderLabel" Text=""
+                             Foreground="#666" FontSize="9" VerticalAlignment="Center"/>
+                </StackPanel>
+              </Border>
+
+              <!-- Circuit image (large) -->
+              <Border Grid.Row="1" Background="#0A0A0A" Margin="10,8,10,6">
+                <Image x:Name="ConfirmedCircuitImage" Stretch="Uniform" Margin="10"
+                       RenderOptions.BitmapScalingMode="HighQuality"/>
+              </Border>
+
+              <!-- Circuit info -->
+              <Border Grid.Row="2" Background="#111" Margin="10,0,10,10"
+                      CornerRadius="6" Padding="12,10">
+                <StackPanel>
+                  <TextBlock x:Name="ConfirmedCircuitName" Text=""
+                             Foreground="#FF6B00" FontSize="13" FontWeight="Bold" Margin="0,0,0,4"/>
+                  <StackPanel Orientation="Horizontal" Margin="0,0,0,2">
+                    <TextBlock x:Name="ConfirmedCircuitCountry" Foreground="#888" FontSize="10"/>
+                    <TextBlock Text="  ·  " Foreground="#333"/>
+                    <TextBlock x:Name="ConfirmedCircuitLength" Foreground="#888" FontSize="10"/>
+                  </StackPanel>
+                  <TextBlock x:Name="ConfirmedCircuitRecord" Foreground="#555" FontSize="10"/>
+                </StackPanel>
+              </Border>
+            </Grid>
+
           </Grid>
         </Border>
 
@@ -318,23 +363,26 @@
               <TextBlock Text="WIND SPEED" Foreground="#FF6B00" FontSize="11"
                          FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,4"/>
 
-              <Canvas Width="240" Height="160" HorizontalAlignment="Center">
-                <!-- Background ring -->
-                <Ellipse Canvas.Left="20" Canvas.Top="4" Width="200" Height="200"
-                         Stroke="#181818" StrokeThickness="22" Fill="Transparent"/>
+              <!-- Gauge arc only — ClipToBounds removes the "bar" artifact -->
+              <Canvas Width="240" Height="160" HorizontalAlignment="Center" ClipToBounds="True">
 
-                <!-- Green 0-33% -->
+                <!-- Background arc: 270° sweep from 225° to 135° CW (bottom-left → top → bottom-right) -->
+                <Path Canvas.Left="20" Canvas.Top="4" Fill="Transparent"
+                      Stroke="#181818" StrokeThickness="22"
+                      Data="M 29.3,170.7 A 100,100 0 1 1 170.7,170.7"/>
+
+                <!-- Green 0–33%: 225°→315° CW (bottom-left → left → top-left) -->
                 <Path Canvas.Left="20" Canvas.Top="4" Fill="Transparent"
                       Stroke="#1A4A1A" StrokeThickness="22"
-                      Data="M 140,192 A 100,100 0 0 1 4,120"/>
-                <!-- Yellow 33-66% -->
+                      Data="M 29.3,170.7 A 100,100 0 0 1 29.3,29.3"/>
+                <!-- Yellow 33–66%: 315°→45° CW (top-left → top → top-right) -->
                 <Path Canvas.Left="20" Canvas.Top="4" Fill="Transparent"
                       Stroke="#3A2A00" StrokeThickness="22"
-                      Data="M 4,120 A 100,100 0 0 1 100,4"/>
-                <!-- Red 66-100% -->
+                      Data="M 29.3,29.3 A 100,100 0 0 1 170.7,29.3"/>
+                <!-- Red 66–100%: 45°→135° CW (top-right → right → bottom-right) -->
                 <Path Canvas.Left="20" Canvas.Top="4" Fill="Transparent"
                       Stroke="#3A0800" StrokeThickness="22"
-                      Data="M 100,4 A 100,100 0 0 1 196,120"/>
+                      Data="M 170.7,29.3 A 100,100 0 0 1 170.7,170.7"/>
 
                 <!-- Tick marks -->
                 <Line Canvas.Left="120" Canvas.Top="4" X1="0" Y1="0" X2="0" Y2="14"
@@ -379,18 +427,17 @@
                 <Ellipse Canvas.Left="112" Canvas.Top="96" Width="16" Height="16" Fill="#FF6B00"/>
                 <Ellipse Canvas.Left="116" Canvas.Top="100" Width="8"  Height="8"  Fill="#0D0D0D"/>
 
-                <!-- Speed text -->
-                <TextBlock x:Name="SimSpeedText" Canvas.Left="0" Canvas.Top="118"
-                           Text="0" Foreground="White" FontSize="36" FontWeight="Bold"
-                           Width="240" TextAlignment="Center"/>
-                <TextBlock Canvas.Left="0" Canvas.Top="155"
-                           Text="km/h" Foreground="#444" FontSize="12"
-                           Width="240" TextAlignment="Center"/>
-
-                <!-- Labels -->
-                <TextBlock Canvas.Left="8"   Canvas.Top="140" Text="0"   Foreground="#2A2A2A" FontSize="10"/>
-                <TextBlock Canvas.Left="205" Canvas.Top="140" Text="400" Foreground="#2A2A2A" FontSize="10"/>
+                <!-- Scale labels (white) -->
+                <TextBlock Canvas.Left="30"  Canvas.Top="138" Text="0"   Foreground="White" FontSize="10"/>
+                <TextBlock Canvas.Left="196" Canvas.Top="138" Text="400" Foreground="White" FontSize="10"/>
               </Canvas>
+
+              <!-- Speed readout BELOW the gauge arc -->
+              <TextBlock x:Name="SimSpeedText"
+                         Text="0" Foreground="White" FontSize="36" FontWeight="Bold"
+                         HorizontalAlignment="Center" Margin="0,6,0,0"/>
+              <TextBlock Text="km/h" Foreground="White" FontSize="12"
+                         HorizontalAlignment="Center" Margin="0,2,0,0"/>
 
               <TextBlock Text="Connected to wind tunnel dial" Foreground="#282828"
                          FontSize="9" HorizontalAlignment="Center" Margin="0,8,0,0"/>
